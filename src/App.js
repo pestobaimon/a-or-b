@@ -1,52 +1,93 @@
-import { useState } from "react";
-import Question from "./pages/Question/Question";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import UserSelect from "./pages/UserSelect/UserSelect";
-import { UserContextProvider } from "./context";
+import {useState} from "react";
+import Room from "./pages/Room/Room";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import NameSelect from "./pages/NameSelect/NameSelect";
+import {UserContextProvider} from "./context";
 import styles from "./App.module.css";
 import RoomSelect from "./pages/RoomSelect/RoomSelect";
-import GuardedQuestionRoute from "./GuardedQuestionRoute";
-import GuardedUserSelectRoute from "./GuardedUserSelectRoute";
+import {
+  GuardedRoomRoute,
+  GuardedNameSelectRoute,
+  GuardedRoomSelectRoute,
+  GuardedSignInRoute,
+} from "./RouteGuards";
+import Firebase, {FirebaseContext} from "./Firebase";
+import withFirebaseAuth from "react-with-firebase-auth";
+import SignIn from "./pages/SignIn/SignIn";
+import firebase from "firebase";
 
-function App() {
-    const [user, setUser] = useState(null);
-    const [oppositeUser, setOppositeUser] = useState(null);
-    const [room, setRoom] = useState(null);
+const fb = new Firebase();
+const firebaseAppAuth = fb.auth;
 
-    return (
-        <div className={styles.App}>
-            <div className={styles.container}>
-                <UserContextProvider value={{ user, oppositeUser, room }}>
-                    <Router>
-                        <Switch>
-                            <Route
-                                exact
-                                path="/"
-                                render={(props) => (
-                                    <RoomSelect {...props} setRoom={setRoom} room={room} />
-                                )}
-                            />
-                            <GuardedUserSelectRoute
-                                exact
-                                path="/user-select"
-                                room={room}
-                                component={UserSelect}
-                                setUser={setUser}
-                                setOppositeUser={setOppositeUser}
-                            />
-                            <GuardedQuestionRoute
-                                exact
-                                path="/ask"
-                                room={room}
-                                user={user}
-                                component={Question}
-                            />
-                        </Switch>
-                    </Router>
-                </UserContextProvider>
-            </div>
+const providers = {
+  facebookProvider: new firebase.auth.FacebookAuthProvider(),
+};
+const createComponentWithAuth = withFirebaseAuth({providers, firebaseAppAuth});
+
+const App = ({
+  /** These props are provided by withFirebaseAuth HOC */
+  signInWithFacebook,
+  signOut,
+  setError,
+  user,
+  error,
+  loading,
+}) => {
+  const [name, setName] = useState(null);
+  const [oppositeUser, setOppositeUser] = useState(null);
+  const [savedRooms, setSavedRooms] = useState(null);
+  const [room, setRoom] = useState(null);
+
+  return (
+    <FirebaseContext.Provider value={fb}>
+      <div className={styles.App}>
+        <div className={styles.container}>
+          <UserContextProvider
+            value={{user, oppositeUser, room, name, setName}}
+          >
+            <Router>
+              <Switch>
+                <GuardedSignInRoute
+                  exact
+                  path="/"
+                  user={user}
+                  signInWithFacebook={signInWithFacebook}
+                  component={SignIn}
+                />
+                <GuardedRoomSelectRoute
+                  exact
+                  path="/room-select"
+                  user={user}
+                  room={room}
+                  setRoom={setRoom}
+                  savedRooms={savedRooms}
+                  setSavedRooms={setSavedRooms}
+                  component={RoomSelect}
+                />
+                <GuardedNameSelectRoute
+                  exact
+                  path="/name-select"
+                  room={room}
+                  user={user}
+                  component={NameSelect}
+                  setName={setName}
+                  setOppositeUser={setOppositeUser}
+                />
+                <GuardedRoomRoute
+                  exact
+                  path="/room"
+                  room={room}
+                  user={user}
+                  name={name}
+                  component={Room}
+                />
+              </Switch>
+            </Router>
+          </UserContextProvider>
         </div>
-    );
-}
+      </div>
+    </FirebaseContext.Provider>
+  );
+};
 
-export default App;
+export default createComponentWithAuth(App);

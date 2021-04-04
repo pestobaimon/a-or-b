@@ -1,0 +1,14 @@
+.signIn{
+  min-height: 100%;
+  background: white;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center
+}
+
+.button{
+  font-size: 2rem;
+  border: 2px solid black;
+}

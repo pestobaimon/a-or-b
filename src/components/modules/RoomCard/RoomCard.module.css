@@ -1,0 +1,16 @@
+.roomCard {
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 3rem;
+  border-radius: 1rem;
+}
+
+.container {
+  background: var(--color-primary);
+  min-height: 15rem;
+  color:var(--color-text-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

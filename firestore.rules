@@ -1,53 +1,76 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-  
-    function incomingData() {
-     return request.resource.data;
-    }
-    function onlyHasAttrs(attrs){
-       return incomingData().keys().hasOnly(attrs);
-    }
-    
-    function isValidQuestion() {
-      return (
-          onlyHasAttrs(['player1Ans', 'player2Ans', 'askerId', 'question', 'timeStamp', 'roomRef']) &&
-          incomingData().player1Ans is string &&
-          incomingData().player2Ans is string &&
-          (incomingData().askerId == "1" || incomingData().askerId == "2") &&
-          incomingData().question is string &&
-          incomingData().question.size() > 0 &&
-          incomingData().timeStamp is timestamp &&
-          incomingData().roomRef is string &&
-          exists(/databases/$(database)/documents/rooms/$(incomingData().roomRef))
-      );
-		}
-    
-    function isValidAnswer() {
-    	return (
-          true
-      );
-    }
-    
-    function isValidRoom() {
-    	return (onlyHasAttrs(['id', 'player1', 'player2']) &&
-          incomingData().id is string &&
-          incomingData().id > 0);
+
+    function isAuthenticated(){
+      return request.auth.uid != null;
     }
 
-		 match /rooms/{room} {
-    	allow read: if true;
-      allow create: if isValidRoom();
-      allow update: if true;
+    function incomingData() {
+      return request.resource.data;
     }
-    
+    function onlyHasAttrs(attrs){
+      return incomingData().keys().hasOnly(attrs);
+    }
+
+    function isValidQuestion() {
+      return (
+      onlyHasAttrs(['player1Ans', 'player2Ans', 'askerId', 'question', 'timeStamp', 'roomRef']) &&
+      incomingData().player1Ans is string &&
+      incomingData().player2Ans is string &&
+      (incomingData().askerId == "1" || incomingData().askerId == "2") &&
+      incomingData().question is string &&
+      incomingData().question.size() > 0 &&
+      incomingData().timeStamp is timestamp &&
+      incomingData().roomRef is string &&
+      exists(/databases/$(database)/documents/rooms/$(incomingData().roomRef))
+      );
+    }
+
+    function isValidAnswer() {
+      return (
+      ((
+      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['player1Ans']) &&
+      !request.resource.data.diff(resource.data).affectedKeys().hasOnly(['player2Ans'])
+      ) || (
+      !request.resource.data.diff(resource.data).affectedKeys().hasOnly(['player1Ans']) &&
+      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['player2Ans'])
+      )) && (
+      (
+      incomingData().player1Ans is string ||
+      incomingData().player2Ans is string) &&
+      (
+      incomingData().player1Ans.size() > 0 ||
+      incomingData().player2Ans.size() > 0    
+      )
+      )
+      );
+    }
+
+    function isValidRoom() {
+      return (onlyHasAttrs(['id', 'player1', 'player2']) &&
+      incomingData().id is string &&
+      incomingData().id > 0);
+    }
+
+    function isInRoom() {
+      return ((request.auth.uid == get(/databases/$(database)/documents/rooms/$(incomingData().roomRef)/playerIds/ids).data.player1) ||
+      (request.auth.uid == get(/databases/$(database)/documents/rooms/$(incomingData().roomRef)/playerIds/ids).data.player2));
+    }
+
+    match /rooms/{room} {
+      allow read: if isAuthenticated();
+      allow create: if isValidRoom();
+      allow update: if isAuthenticated(); //not secure can only add new userId
+    }
+
     match /questions/{question} {
-    	allow read: if true;
+      allow read: if isAuthenticated();
       allow create: if isValidQuestion();
-      allow update: if isValidAnswer();
+      allow update: if isValidAnswer() && isInRoom();
     }
     match /premadeQuestions/{question}{
-    allow read: if true;
+      allow read: if isAuthenticated();
     }
   }
 }
