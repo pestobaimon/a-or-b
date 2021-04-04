@@ -1,0 +1,39 @@
+.buttonPrimary {
+  height: 3rem;
+  background: black;
+  color: white;
+  border: 2px solid black;
+  border-radius: 10px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.buttonPrimary:active {
+  border: 2px solid black;
+  background: white;
+  color: black;
+}
+
+.buttonQuestion {
+  height: 4rem;
+  background: var(--color-text-light);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.219);
+  width: 120%;
+}
+
+.buttonQuestion:active {
+  height: 4rem;
+  background: rgb(206, 206, 206);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.219);
+  width: 120%;
+}
+
+.noBorder {
+  border: 0;
+}

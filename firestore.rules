@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  
+    function incomingData() {
+     return request.resource.data;
+    }
+    function onlyHasAttrs(attrs){
+       return incomingData().keys().hasOnly(attrs);
+    }
+    
+    function isValidQuestion() {
+      return (
+          onlyHasAttrs(['player1Ans', 'player2Ans', 'askerId', 'question', 'timeStamp', 'roomRef']) &&
+          incomingData().player1Ans is string &&
+          incomingData().player2Ans is string &&
+          (incomingData().askerId == "1" || incomingData().askerId == "2") &&
+          incomingData().question is string &&
+          incomingData().question.size() > 0 &&
+          incomingData().timeStamp is timestamp &&
+          incomingData().roomRef is string &&
+          exists(/databases/$(database)/documents/rooms/$(incomingData().roomRef))
+      );
+		}
+    
+    function isValidAnswer() {
+    	return (
+          true
+      );
+    }
+    
+    function isValidRoom() {
+    	return (onlyHasAttrs(['id', 'player1', 'player2']) &&
+          incomingData().id is string &&
+          incomingData().id > 0);
+    }
+
+		 match /rooms/{room} {
+    	allow read: if true;
+      allow create: if isValidRoom();
+      allow update: if true;
+    }
+    
+    match /questions/{question} {
+    	allow read: if true;
+      allow create: if isValidQuestion();
+      allow update: if isValidAnswer();
+    }
+    match /premadeQuestions/{question}{
+    allow read: if true;
+    }
+  }
+}

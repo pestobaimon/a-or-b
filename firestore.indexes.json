@@ -1,0 +1,19 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "questions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "roomRef",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timeStamp",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

@@ -1,0 +1,91 @@
+.askedCard{
+  width: 100%;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.container {
+  border-radius: 10px;
+  background: var(--color-primary);
+  min-height: 20rem;
+  color:var(--color-text-light);
+  display: flex;
+  flex-direction: column;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.header {
+  position: relative;
+  top:0;
+  padding-top:1rem;
+  background: black;
+  color: white;
+  width: 110%;
+  padding-bottom: 1rem;
+}
+
+.question{
+  font-size: 1.6rem;
+  font-weight: 500;
+}
+
+.askedBy{
+  margin: 1rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.subtitle {
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.alert {
+  font-size: 1.6rem;
+  font-weight: 400;
+}
+
+.theirAnswerContainer {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  justify-content: flex-start;
+  margin: 1rem;
+}
+
+.yourAnswerContainer {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  justify-content: flex-end;
+  margin: 1rem;
+}
+
+.yourProfilePic {
+  margin-top: auto;
+  margin-left: 0.5rem;
+}
+
+.theirProfilePic {
+  margin-top: auto;
+  margin-right: 0.5rem;
+}
+
+.combo{
+  display: flex;
+  flex-direction: row;
+}
+
+.submitButtonContainer{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.submitButton {
+  width: 90%;
+}

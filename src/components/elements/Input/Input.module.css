@@ -1,0 +1,25 @@
+.inputContainer {
+  overflow: hidden;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+.input {
+  border: 0;
+  background: white;
+  border-radius: 2rem;
+  border-bottom-right-radius: 0.5rem;
+  padding:0.5rem; 
+  font-size: 1.6rem;
+  font-weight: 400;
+  text-align: center;
+  width: 20rem;
+  line-height: 1.8rem;
+  resize: none;
+  word-break: break-all;
+}
+
+.input:active {
+  border: 0;
+}
