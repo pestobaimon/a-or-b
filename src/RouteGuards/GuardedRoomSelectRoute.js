@@ -14,7 +14,7 @@ const GuardedRoomSelectRoute = ({
     <Route
       {...rest}
       render={(props) =>
-        user !== null ? (
+        room === null ? (
           <Component
             user={user}
             room={room}
@@ -24,7 +24,7 @@ const GuardedRoomSelectRoute = ({
             {...props}
           />
         ) : (
-          <Redirect to="/room-select" />
+          <Redirect to="/sign-in" />
         )
       }
     />

@@ -2,15 +2,21 @@ import React, {useState, useContext, useEffect} from "react";
 import Input from "../../elements/Input/Input";
 import SubmitButton from "../../elements/SubmitButton/SubmitButton";
 import styles from "./QuestionCard.module.css";
-
-import {UserContext} from "../../../context";
 import {FirebaseContext} from "../../../Firebase";
 
-const QuestionCard = () => {
+import {AuthContext} from "../../../context"
+
+const QuestionCard = ({room}) => {
   const [question, setQuestion] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const {user, room} = useContext(UserContext);
   const {db} = useContext(FirebaseContext);
+
+  const {state} = useContext(AuthContext);
+  const {user} = state;
+
+  let playerSelf;
+  if (room.player1 === user.uid) playerSelf = "1";
+  else playerSelf = "2";
 
   const fetchPremadeQuestion = async () => {
     const randomId = Math.round(Math.random() * 5).toString();
@@ -29,15 +35,14 @@ const QuestionCard = () => {
 
   const submitAction = async () => {
     const q = {
-      askerId: user.id,
+      askerId: playerSelf,
       player1Ans: "",
       player2Ans: "",
       question: question,
-      roomRef: room.id,
       timeStamp: new Date(),
     };
     console.log(q);
-    const res = await db.collection("questions").add(q);
+    const res = await db.collection(`rooms/${room.id}/questions`).add(q);
     console.log(res);
   };
 
@@ -60,9 +65,7 @@ const QuestionCard = () => {
             Get a new question
           </button>
         </div>
-        {isTyping ? (
-          <Input submitAction={submitAction} setInput={setQuestion} />
-        ) : null}
+        {isTyping ? <Input submitAction={submitAction} setInput={setQuestion} /> : null}
         <SubmitButton
           btnStyle="buttonQuestion"
           border={true}

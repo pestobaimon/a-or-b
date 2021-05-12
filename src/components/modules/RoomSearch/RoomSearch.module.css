@@ -1,0 +1,82 @@
+.searchBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.btn {
+  background: black;
+  border: 2px solid black;
+  color: white;
+  border-radius: 10px;
+  height: 30px;
+}
+
+.btn:active {
+  background: white;
+  border: 2px solid black;
+  color:black;
+}
+
+.searchResult {
+  position: relative;
+  margin-top: 10px;
+  width: 100%;
+  height: 60px;
+  background: var(--color-primary);
+  border: 2px solid black;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  overflow:hidden;
+}
+
+.searchResultRoomId{
+  position: relative;
+  right: 20px;
+  font-size: large;
+  color:white;
+  font-weight: 600;
+}
+
+.buttonGroup {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+  right: 0;
+}
+
+.joinButton {
+  background: black;
+  color: white;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+  font-size: medium;
+  height: 120%;
+  width: 50px;
+}
+
+.joinButton:active {
+  background: white;
+  color: black;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+}
+
+.closeButton {
+  height: 100%;
+  width: 30px;
+  background: rgba(150, 28, 28, 0.671);
+  margin: 0;
+  padding: 0;
+  font-size: large;
+  font-weight: 700;
+}
+
+.closeButton:active {
+background: rgba(87, 16, 16, 0.671);
+}

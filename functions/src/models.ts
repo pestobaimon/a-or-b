@@ -36,4 +36,9 @@ interface User {
   uid: string;
 }
 
-export {Room, Player, Question, PlayerIds, User};
+interface RoomKeyPair {
+  shortKey: string;
+  roomId: string;
+}
+
+export {Room, Player, Question, PlayerIds, User, RoomKeyPair};

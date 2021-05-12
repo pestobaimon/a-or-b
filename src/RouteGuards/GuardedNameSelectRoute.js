@@ -5,7 +5,8 @@ const GuardedNameSelectRoute = ({
   component: Component,
   room,
   setUser,
-  user,
+  userData,
+  setUserData,
   setOppositeUser,
   ...rest
 }) => {
@@ -13,15 +14,15 @@ const GuardedNameSelectRoute = ({
     <Route
       {...rest}
       render={(props) =>
-        room !== null && user !== null ? (
+        room !== null && userData.name === "" ? (
           <Component
             room={room}
-            setUser={setUser}
+            setUserData={setUserData}
             setOppositeUser={setOppositeUser}
             {...props}
           />
         ) : (
-          <Redirect to="/" />
+          <Redirect to="/room" />
         )
       }
     />

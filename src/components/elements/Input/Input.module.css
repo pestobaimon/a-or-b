@@ -5,6 +5,11 @@
   font-size: 1rem;
 }
 
+.inputContainer {
+  overflow: hidden;
+  font-size: 1rem;
+}
+
 .input {
   border: 0;
   background: white;

@@ -4,11 +4,21 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
+import {AuthProvider} from "./context/authContext";
+import {BrowserRouter} from "react-router-dom";
+
+import {unregister} from "./serviceWorker";
+unregister();
+
 ReactDOM.render(
-    <React.StrictMode>
+  <React.StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
         <App />
-    </React.StrictMode>,
-    document.getElementById("root")
+      </AuthProvider>
+    </BrowserRouter>
+  </React.StrictMode>,
+  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -1,117 +1,82 @@
 import React, {useEffect, useContext, useState} from "react";
 import {useHistory} from "react-router";
 import RoomCard from "../../components/modules/RoomCard/RoomCard";
-import {UserContext} from "../../context";
+import RoomSearch from "../../components/modules/RoomSearch/RoomSearch";
+import {AuthContext} from "../../context";
 import {FirebaseContext} from "../../Firebase";
 
 import styles from "./RoomSelect.module.css";
 
-const RoomSelect = ({setRoom, savedRooms, setSavedRooms}) => {
-  const [loading, setLoading] = useState(false);
+const RoomSelect = (props) => {
+  const [rooms, setRooms] = useState(null);
+  const [createRoomLoading, setCreateRoomLoading] = useState(false);
   const {db, functions} = useContext(FirebaseContext);
-  const {room, user} = useContext(UserContext);
-  const history = useHistory();
-  console.log(savedRooms);
-  //   const goToUserSelect = () => {
-  //     history.push("/user-select");
-  //   };
+  const {state} = useContext(AuthContext);
+  const {user} = state;
 
-  //   const fetchRoomDev = async () => {
-  //     const roomId = "5A2E8";
-  //     const roomRef = db.collection("rooms").doc(roomId);
-  //     const doc = await roomRef.get();
+  // const history = useHistory();
 
-  //     if (!doc.exists) {
-  //       console.log("No such room!");
-  //     } else {
-  //       setRoom(doc.data());
-  //     }
-  //   };
-
-  const fetchRooms = async (rooms) => {
-    console.log(rooms);
-    const roomIds = rooms.map((room) => room.roomId);
-    if (rooms.length > 0) {
-      const docs = await db
-        .collection("rooms")
-        .where("id", "in", roomIds)
-        .get();
-
-      const docRooms = [];
-      docs.forEach((doc) => {
-        docRooms.push(doc.data());
-      });
-      setSavedRooms(docRooms);
-    } else {
-      setSavedRooms([]);
-    }
-  };
-
-  const getLocalRooms = () => JSON.parse(localStorage.getItem("joinedRooms"));
-  const setLocalRooms = (rooms) =>
-    localStorage.setItem("joinedRooms", JSON.stringify(rooms));
-  const addLocalRooms = (room) => {
-    const prevRooms = getLocalRooms();
-    setLocalRooms([...prevRooms, room]);
-  };
-
-  const createRoomHandler = async () => {
-    setLoading(true);
-    const cfInstance = functions.httpsCallable("requestNewRoom");
+  const fetchRooms = async () => {
+    const cfInstance = functions.httpsCallable("requestJoinedRooms");
     try {
       const res = await cfInstance({uid: user.uid});
-      const {room} = res.data;
-      addLocalRooms({roomId: room.id});
-      updateLocalRooms();
-      setRoom(room);
+      const {rooms, success, msg} = res.data;
+      console.log(msg);
+      if (success) setRooms(rooms);
     } catch (e) {
       console.log(e);
     }
   };
 
-  const updateLocalRooms = () => {
-    const localRooms = getLocalRooms();
-    console.log(localRooms);
-    fetchRooms(localRooms);
+  const createRoomHandler = async () => {
+    setCreateRoomLoading(true);
+    const cfInstance = functions.httpsCallable("requestCreateRoom");
+    try {
+      const res = await cfInstance({uid: user.uid});
+      const {success, roomId} = res.data;
+      // console.log(msg);
+      if(success && roomId.length > 0){
+        console.log(`successfully created room ${roomId}`);
+        fetchRooms();
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    setCreateRoomLoading(false);
   };
 
   useEffect(() => {
     // localStorage.setItem("joinedRooms", JSON.stringify([]));
-    updateLocalRooms();
-    if (room != null) {
-      setLoading(false);
-      history.push("/user-select");
-    }
-  }, [room]);
+    fetchRooms();
+  }, []);
 
   return (
     <div className={styles.roomSelect}>
-      {loading ? (
-        <div>
-          <h1>Loading</h1>
-        </div>
-      ) : (
+      {rooms ? (
         <>
+          <RoomSearch fetchRooms={fetchRooms} />
           Rooms
-          {savedRooms === null ? (
-            <div className={styles.loading}>Loading Rooms</div>
+          {rooms.map((room, key) => (
+            <RoomCard key={key} room={room} />
+          ))}
+          {createRoomLoading ? (
+            <div>creating room...</div>
           ) : (
-            [
-              <div
-                className={styles.createRoomCard}
-                onClick={createRoomHandler}
-                key={0}
-              >
-                <div className={styles.createRoomCardContainer}>
-                  <h1>+ create new room</h1>
-                </div>
-              </div>,
-              savedRooms.map((roomObj, id) => (
-                <RoomCard setRoom={setRoom} key={id + 1} roomObj={roomObj} />
-              )),
-            ]
+            <div
+              className={styles.createRoomCard}
+              onClick={createRoomHandler}
+              key={0}
+            >
+              <div className={styles.createRoomCardContainer}>
+                <h1>+ create new room</h1>
+              </div>
+            </div>
           )}
         </>
+      ) : (
+        <div>
+          <h1>loading rooms...</h1>
+        </div>
       )}
     </div>
   );

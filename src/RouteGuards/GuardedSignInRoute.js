@@ -1,28 +1,22 @@
-import React from "react";
+import React, {useContext} from "react";
 import {Route, Redirect} from "react-router-dom";
+import {AuthContext} from "../context";
 
-const GuardedQuestionRoute = ({
-  component: Component,
-  user,
-  signInWithFacebook,
-  ...rest
-}) => {
+const GuardedSignInRoute = ({component: Component, ...rest}) => {
+  const {state, dispatch} = useContext(AuthContext);
+  const {user} = state;
   return (
     <Route
       {...rest}
       render={(props) =>
         user === null ? (
-          <Component
-            {...props}
-            user={user}
-            signInWithFacebook={signInWithFacebook}
-          />
+          <Redirect to="/sign-in" />
         ) : (
-          <Redirect to="/room-select" />
+          <Component {...props} user={user} />
         )
       }
     />
   );
 };
 
-export default GuardedQuestionRoute;
+export default GuardedSignInRoute;
